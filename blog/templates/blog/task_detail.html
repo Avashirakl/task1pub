@@ -1,0 +1,14 @@
+{% extends 'blog/temp.html' %}
+
+{% block content %}
+    <div class="task">
+        {% if task.start_date %}
+            <div class="date">
+                {{ task.start_date }}
+            </div>
+        {% endif %}
+        <a class="btn btn-default" href="{% url 'task_edit' pk=task.pk %}"><span class="glyphicon glyphicon-pencil">edit</span></a>
+        <h1>{{ task.name }}</h1>
+        <p>{{ task.description|linebreaksbr }}</p>
+    </div>
+{% endblock %}

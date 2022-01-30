@@ -27,6 +27,7 @@
         }
 
         .footer{
+            top: 95%;
             width: 100%;
             height: 20%;
             background-color: rgb(5, 194, 37);
@@ -40,6 +41,8 @@
 </head>
 <body> 
     <div class="header">
+        <a href="{% url 'task_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus">new task</span></a>
+        <a href="{% url 'index' %}" class="top-menu"><span class="glyphicon glyphicon-plus">main page</span></a>
 
     </div>
     

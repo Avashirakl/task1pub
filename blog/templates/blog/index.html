@@ -5,7 +5,7 @@
             <div>
                 <p>published: {{ task.start_date }}</p>
                 <p>{{ task.author }}</p>
-                <h1><a href="">{{ task.taskname }}</a></h1>
+                <h1><a href="{% url 'task_detail' pk=task.pk %}">{{ task.name }}</a></h1>
                 <p>{{ task.description|linebreaksbr }}</p>
                 <p>{{ task.status }}</p>
                 <p>{{ task.end_date }}</p>
