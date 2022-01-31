@@ -1,5 +1,6 @@
+from dataclasses import field
 from django.contrib.auth.models import User
-from rest_framework import routers, serializers, viewsets
+from rest_framework import serializers
 from .models import Task
 
 
@@ -9,17 +10,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'is_staff']
 
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
-# class Tasks(viewsets.ModelViewSet):
-#     class Meta:
-#         model = Task
-#         fields = ('name', 'description', 'status',)
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
