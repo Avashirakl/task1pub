@@ -1,15 +1,12 @@
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage, send_mail, send_mass_mail, BadHeaderError
-from django.http import HttpResponse, HttpResponseRedirect
-
+from django.core.mail import send_mail, BadHeaderError
+from django.http import HttpResponse
 
 from rest_framework.decorators import action
-from rest_framework.response import Response
-
 
 from .serializers import TaskListSerializer, TaskCreateSerializer, UserSerializer, TaskChangingSerializer, NotificationSerialiazer, TaskRetrieveSerializer, TaskUpdateSerializer
-from .models import Task, TaskChanging, Notification
-from rest_framework import viewsets, permissions
+from blog.models import Task, TaskChanging, Notification
+from rest_framework import viewsets
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,8 +31,6 @@ class TaskViewSet(viewsets.ModelViewSet):
             serializer = TaskRetrieveSerializer
         elif self.action == 'update':
             serializer = TaskUpdateSerializer
-
-
         elif self.action == 'partial_update':
             serializer = TaskUpdateSerializer
 
@@ -48,6 +43,7 @@ class TaskChangingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Task.objects.filter()
+
 
 
 class NotificationViewSet(viewsets.ModelViewSet):

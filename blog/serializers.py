@@ -1,8 +1,6 @@
-from dataclasses import field, fields
-
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Task, TaskChanging, Notification, TaskHistory
+from blog.models import Task, TaskChanging, Notification
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,29 +30,34 @@ class TaskRetrieveSerializer(serializers.ModelSerializer):
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'buferstatus', 'changed_by', 'end_date']
-        read_only_fields = ['id', 'name', 'description', 'author', 'spectators', 'buferstatus']
+        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date']
+        read_only_fields = ['id', 'name', 'description', 'author', 'spectators']
 
-    # def update(self, instance, validated_data):
-    #     instance.save()
-    #     return instance
-
+    def update(self, instance, validated_data):
+        tasks = validated_data.pop
+        instance.previousstatus = instance.status
+        varprev = instance.previousstatus
+        instance.status = validated_data.get('status', instance.status)
+        varstat = instance.status
+        TaskChanging.objects.create(task=instance,)
+        instance.save()
+        return super().update(instance, validated_data)
 
 class TaskStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['status', ]
+        fields = ['status']
 
 
 class TaskChangingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskChanging
-        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by',]
+        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by', ]
 
-    def to_representation(self, instance):
-        representation = super(TaskChangingSerializer, self).to_representation(instance)
-        representation['status'] = TaskStatusSerializer(instance=instance.task).data
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super(TaskChangingSerializer, self).to_representation(instance)
+    #     representation['status'] = TaskStatusSerializer(instance=instance.task).data
+    #     return representation
 
 
 class TaskHistorySerializer(serializers.ModelSerializer):
