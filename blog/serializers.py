@@ -39,9 +39,8 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         varprev = instance.previousstatus
         instance.status = validated_data.get('status', instance.status)
         varstat = instance.status
-        TaskChanging.objects.create(task=instance,)
         instance.save()
-        return super().update(instance, validated_data)
+        return instance
 
 class TaskStatusSerializer(serializers.ModelSerializer):
     class Meta:
