@@ -1,14 +1,13 @@
-from django.utils import timezone
-from django.shortcuts import redirect, render, get_object_or_404
-from django.core.mail import send_mail 
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail, send_mass_mail, BadHeaderError
+from django.http import HttpResponse, HttpResponseRedirect
+
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
-from .serializers import TaskSerializer, UserSerializer, TaskChangingSerializer, NotificationSerialiazer
+from .serializers import TaskListSerializer, TaskCreateSerializer, UserSerializer, TaskChangingSerializer, NotificationSerialiazer, TaskRetrieveSerializer, TaskUpdateSerializer
 from .models import Task, TaskChanging, Notification
 from rest_framework import viewsets, permissions
 
@@ -19,13 +18,36 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+    # queryset = Task.objects.all()
+    serializer_class = TaskCreateSerializer
+
+    def get_queryset(self):
+        return Task.objects.filter(author=self.request.user)
+
+    def get_serializer_class(self):
+        serializer = self.serializer_class
+        if self.action == 'create':
+            serializer = TaskCreateSerializer
+        elif self.action == 'list':
+            serializer = TaskListSerializer
+        elif self.action == 'retrieve':
+            serializer = TaskRetrieveSerializer
+        elif self.action == 'update':
+            serializer = TaskUpdateSerializer
+
+
+        elif self.action == 'partial_update':
+            serializer = TaskUpdateSerializer
+
+        return serializer
 
 
 class TaskChangingViewSet(viewsets.ModelViewSet):
     queryset = TaskChanging.objects.all()
     serializer_class = TaskChangingSerializer
+
+    def get_queryset(self):
+        return Task.objects.filter()
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
@@ -38,9 +60,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
         user = User.objects.get(id=User.pk)
         user_email = user.email
         task = Task.objects.get(id=Task.pk)
+        from_email = 'django2503@gmail.com'
 
-        email = EmailMessage('Notification about task', task, to=[user_email])
-        email.send()
-        return Response(status=200)
+        if user_email and task.name and from_email:
+            try:
+                send_mail(user.username, task.name, from_email, [user_email], auth_user='django250302@gmail.com', auth_password='adil250302')
+            except BadHeaderError:
+                return HttpResponse('Invalid.')
+        else:
+            return HttpResponse('Make sure all fields are entered and valid.')
 
     

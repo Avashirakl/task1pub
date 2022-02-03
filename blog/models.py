@@ -1,11 +1,8 @@
+import uuid
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-
-from model_utils import FieldTracker
-
-import uuid
 
 
 STATUS_CHOICES = [
@@ -24,13 +21,13 @@ class Task(models.Model):
     name = models.CharField(max_length=50, default="")
     description = models.TextField(default="")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='author')
-    spectators = models.ManyToManyField(User, related_name='spectator')
+    spectators = models.ManyToManyField(User, related_name='spectator', null=True)
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default='P')
+    previousstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
+    buferstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
+    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='changer')
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
-
-    tracker = FieldTracker()
-    prevstat = tracker.previous('status')
 
     def __str__(self):
         return self.name
@@ -42,19 +39,21 @@ class TaskChanging(models.Model):
          default=uuid.uuid4,
          editable=False)
     changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    # prevstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
-
-    @property
-    def currentstatus(self):
-        return self.task.status
-
-    @property
-    def prevstatus(self):
-        return self.task.prevstat
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='stats', null=True)
+    prevstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True, )
+    currentstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True,)
 
     def __str__(self):
         return self.task.name
+
+
+class TaskHistory(models.Model):
+    id = models.UUIDField(
+         primary_key=True,
+         default=uuid.uuid4,
+         editable=False)
+    previousstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
+    nextstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
 
 
 class Notification(models.Model):
@@ -62,9 +61,10 @@ class Notification(models.Model):
          primary_key=True,
          default=uuid.uuid4,
          editable=False)
-    users = models.ManyToManyField(User, related_name='notifications')
+    users = models.ManyToManyField(User, related_name='notifications', null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    text = models.TextField(default="", null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.task.name
+        return self.text
