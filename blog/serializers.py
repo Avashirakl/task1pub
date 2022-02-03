@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from blog.models import Task, TaskChanging, Notification
+
+from blog.models import Notification
+from blog.models.task import Task
+from blog.models.taskchanging import TaskChanging
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -30,17 +33,22 @@ class TaskRetrieveSerializer(serializers.ModelSerializer):
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date']
+        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date', 'taskchange']
         read_only_fields = ['id', 'name', 'description', 'author', 'spectators']
 
     def update(self, instance, validated_data):
-        tasks = validated_data.pop
+        tasks = validated_data.pop('tasks', None)
         instance.previousstatus = instance.status
         varprev = instance.previousstatus
         instance.status = validated_data.get('status', instance.status)
         varstat = instance.status
-        instance.save()
-        return instance
+
+        TaskChanging.objects.create(task=instance,
+                                    currentstatus=varstat,
+                                    prevstatus=varprev,
+                                    changed_by=validated_data.get('author', instance.author))
+        return super().update(instance, validated_data)
+
 
 class TaskStatusSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,10 +61,7 @@ class TaskChangingSerializer(serializers.ModelSerializer):
         model = TaskChanging
         fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by', ]
 
-    # def to_representation(self, instance):
-    #     representation = super(TaskChangingSerializer, self).to_representation(instance)
-    #     representation['status'] = TaskStatusSerializer(instance=instance.task).data
-    #     return representation
+
 
 
 class TaskHistorySerializer(serializers.ModelSerializer):

@@ -4,8 +4,10 @@ from django.http import HttpResponse
 
 from rest_framework.decorators import action
 
+from .models import Notification
 from .serializers import TaskListSerializer, TaskCreateSerializer, UserSerializer, TaskChangingSerializer, NotificationSerialiazer, TaskRetrieveSerializer, TaskUpdateSerializer
-from blog.models import Task, TaskChanging, Notification
+from blog.models.task import Task
+from blog.models.taskchanging import TaskChanging
 from rest_framework import viewsets
 
 
@@ -40,10 +42,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 class TaskChangingViewSet(viewsets.ModelViewSet):
     queryset = TaskChanging.objects.all()
     serializer_class = TaskChangingSerializer
-
-    def get_queryset(self):
-        return Task.objects.filter()
-
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
