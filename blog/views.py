@@ -1,14 +1,12 @@
 from django.contrib.auth.models import User
-from django.core.mail import send_mail, BadHeaderError
+from django.core.mail import EmailMessage
 from django.http import HttpResponse
-
-from rest_framework.decorators import action
+from rest_framework import viewsets
 
 from .models import Notification
 from .serializers import TaskListSerializer, TaskCreateSerializer, UserSerializer, TaskChangingSerializer, NotificationSerialiazer, TaskRetrieveSerializer, TaskUpdateSerializer
 from blog.models.task import Task
 from blog.models.taskchanging import TaskChanging
-from rest_framework import viewsets
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -44,24 +42,20 @@ class TaskChangingViewSet(viewsets.ModelViewSet):
     serializer_class = TaskChangingSerializer
 
 
+def sendemail(user, tasks, task):
+    email = EmailMessage('Notification about your task', "Your task id: " + tasks + " Task name: " + task, to=[user])
+    email.send()
+    return HttpResponse('Success')
+
+
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerialiazer
 
-    @action(methods=['POST'], detail=True, url_path='sendemail')
-    def sendemail(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user = User.objects.get(id=User.pk)
-        user_email = user.email
-        task = Task.objects.get(id=Task.pk)
-        from_email = 'django2503@gmail.com'
-
-        if user_email and task.name and from_email:
-            try:
-                send_mail(user.username, task.name, from_email, [user_email], auth_user='django250302@gmail.com', auth_password='adil250302')
-            except BadHeaderError:
-                return HttpResponse('Invalid.')
-        else:
-            return HttpResponse('Make sure all fields are entered and valid.')
-
-    
+    def create(self, request, *args, **kwargs):
+        responce = super(NotificationViewSet, self).create(request, *args, **kwargs)
+        user = self.request.user.email
+        task = Task.objects.get(id=request.data['task'])
+        tasks = request.data['task']
+        sendemail(user, tasks, task.name)
+        return responce

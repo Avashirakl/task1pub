@@ -37,12 +37,10 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'name', 'description', 'author', 'spectators']
 
     def update(self, instance, validated_data):
-        tasks = validated_data.pop('tasks', None)
         instance.previousstatus = instance.status
         varprev = instance.previousstatus
         instance.status = validated_data.get('status', instance.status)
         varstat = instance.status
-
         TaskChanging.objects.create(task=instance,
                                     currentstatus=varstat,
                                     prevstatus=varprev,
@@ -59,17 +57,10 @@ class TaskStatusSerializer(serializers.ModelSerializer):
 class TaskChangingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskChanging
-        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by', ]
-
-
-
-
-class TaskHistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ['id', 'previousstatus']
+        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by', 'changed_at']
 
 
 class NotificationSerialiazer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'text', 'users', 'task', 'created_at', ]
+        fields = ['id', 'users', 'task', 'created_at', ]

@@ -13,9 +13,8 @@ class Notification(models.Model):
          default=uuid.uuid4,
          editable=False)
     users = models.ManyToManyField(User, related_name='notifications', null=True)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    text = models.TextField(default="", null=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, )
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.text
+        return self.task.name
