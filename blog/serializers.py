@@ -27,19 +27,19 @@ class TaskListSerializer(serializers.ModelSerializer):
 class TaskRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', 'spectators']
+        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', 'spectators', ]
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date', 'taskchange']
-        read_only_fields = ['id', 'name', 'description', 'author', 'spectators']
+        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date', ]
+        read_only_fields = ['id', 'name', 'description', 'author', 'spectators', 'previousstatus']
 
     def update(self, instance, validated_data):
         instance.previousstatus = instance.status
         varprev = instance.previousstatus
-        instance.status = validated_data.get('status', instance.status)
+        instance.status = validated_data.get('status')
         varstat = instance.status
         TaskChanging.objects.create(task=instance,
                                     currentstatus=varstat,

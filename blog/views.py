@@ -15,7 +15,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    # queryset = Task.objects.all()
     serializer_class = TaskCreateSerializer
 
     def get_queryset(self):
