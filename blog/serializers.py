@@ -15,7 +15,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', 'spectators', ]
+        fields = ['id', 'name', 'description', 'author', 'status', 'start_date', 'end_date', ]
 
 
 class TaskListSerializer(serializers.ModelSerializer):
@@ -27,14 +27,14 @@ class TaskListSerializer(serializers.ModelSerializer):
 class TaskRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', 'spectators', ]
+        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', ]
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'spectators', 'status', 'previousstatus', 'changed_by', 'end_date', ]
-        read_only_fields = ['id', 'name', 'description', 'author', 'spectators', 'previousstatus']
+        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'end_date', ]
+        read_only_fields = ['id', 'name', 'description', 'author', 'previousstatus']
 
     def update(self, instance, validated_data):
         instance.previousstatus = instance.status
@@ -57,10 +57,10 @@ class TaskStatusSerializer(serializers.ModelSerializer):
 class TaskChangingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskChanging
-        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_by', 'changed_at']
+        fields = ['id', 'task', 'currentstatus', 'prevstatus', 'changed_at']
 
 
 class NotificationSerialiazer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'users', 'task', 'created_at', ]
+        fields = ['id', 'task', 'created_at', ]

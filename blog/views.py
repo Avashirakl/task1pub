@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.http import HttpResponse
 from rest_framework import viewsets
 
@@ -41,8 +41,13 @@ class TaskChangingViewSet(viewsets.ModelViewSet):
     serializer_class = TaskChangingSerializer
 
 
-def sendemail(user, tasks, task):
-    email = EmailMessage('Notification about your task', "Your task id: " + tasks + " Task name: " + task, to=[user])
+def sendemail(user, task, description, status, deadline):
+    email = EmailMessage('Notification about your task', "Task name: " +
+                         task + '\n Task description: ' +
+                         description + '\n Task status: '
+                         + status + "\n Deadline:" +
+                         deadline + "\n \n Please check your task.", to=[user])
+
     email.send()
     return HttpResponse('Success')
 
@@ -53,8 +58,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         responce = super(NotificationViewSet, self).create(request, *args, **kwargs)
-        user = self.request.user.email
+        # user = User.objects.get(id=request.data['users'])
         task = Task.objects.get(id=request.data['task'])
         tasks = request.data['task']
-        sendemail(user, tasks, task.name)
+        deadline = task.end_date.strftime("%d-%b-%Y (%H:%M:%S)")
+        sendemail(task.author.email, task.name, task.description, task.status, deadline)
         return responce
