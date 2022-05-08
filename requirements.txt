@@ -3,3 +3,4 @@ Django~=3.2.10
 djangorestframework
 django-rest-swagger~=2.2.0
 cx_oracle
+django-celery

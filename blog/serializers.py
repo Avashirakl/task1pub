@@ -15,37 +15,37 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'start_date', 'end_date', ]
+        fields = ['id', 'name', 'description', 'status', 'end_date', ]
 
 
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'status', 'previousstatus', 'start_date', 'end_date']
+        fields = ['id', 'name', 'author', 'status', 'start_date', 'end_date']
 
 
 class TaskRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'start_date', 'end_date', ]
+        fields = ['id', 'name', 'description', 'author', 'status', 'start_date', 'end_date', ]
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'author', 'status', 'previousstatus', 'end_date', ]
-        read_only_fields = ['id', 'name', 'description', 'author', 'previousstatus']
+        fields = ['id', 'name', 'description', 'author', 'status', 'end_date', ]
+        read_only_fields = ['id', 'name', 'description', ]
 
-    def update(self, instance, validated_data):
-        instance.previousstatus = instance.status
-        varprev = instance.previousstatus
-        instance.status = validated_data.get('status')
-        varstat = instance.status
-        TaskChanging.objects.create(task=instance,
-                                    currentstatus=varstat,
-                                    prevstatus=varprev,
-                                    changed_by=validated_data.get('author', instance.author))
-        return super().update(instance, validated_data)
+    # def update(self, instance, validated_data):
+    #     instance.previousstatus = instance.status
+    #     varprev = instance.previousstatus
+    #     instance.status = validated_data.get('status')
+    #     varstat = instance.status
+    #     TaskChanging.objects.create(task=instance,
+    #                                 currentstatus=varstat,
+    #                                 prevstatus=varprev,
+    #                                 changed_by=validated_data.get('author', instance.author))
+    #     return super().update(instance, validated_data)
 
 
 class TaskStatusSerializer(serializers.ModelSerializer):

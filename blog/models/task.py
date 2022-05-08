@@ -22,7 +22,7 @@ class Task(models.Model):
     description = models.TextField(default="")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='author')
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default='P')
-    previousstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
+    # previousstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
 

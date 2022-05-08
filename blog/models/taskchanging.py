@@ -16,8 +16,8 @@ class TaskChanging(models.Model):
          primary_key=True,
          default=uuid.uuid4,
          editable=False)
-    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='stats', null=True)
+    # author =
     prevstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True, )
     currentstatus = models.CharField(max_length=9, choices=STATUS_CHOICES, null=True,)
     changed_at = models.DateTimeField(default=timezone.now)
