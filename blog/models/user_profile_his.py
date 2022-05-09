@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class User_profile_his(models.Model):
     log_id = models.AutoField(
-        verbose_name=_('Log_id'),
+        verbose_name=_('Log id'),
         editable=False,
         primary_key=True,
         null=False,
@@ -15,7 +15,7 @@ class User_profile_his(models.Model):
         verbose_name=_('Log date'),
     )
 
-    user_id = models.UUIDField(
+    user_id = models.IntegerField(
         null=False,
         verbose_name=_('User ID'),
         blank=True,
@@ -66,3 +66,4 @@ class User_profile_his(models.Model):
     class Meta:
         verbose_name = _('User profile history')
         verbose_name_plural = _('Users profile histories')
+

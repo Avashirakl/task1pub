@@ -4,13 +4,13 @@ from django.utils.translation import gettext_lazy as _
 
 class User_login_his(models.Model):
     log_id = models.AutoField(
-        verbose_name=_('Log_id'),
+        verbose_name=_('Log id'),
         editable=False,
         primary_key=True,
         null=False,
     )
 
-    user_id = models.UUIDField(
+    user_id = models.IntegerField(
         null=False,
         verbose_name=_('User ID'),
         blank=True,
@@ -37,3 +37,4 @@ class User_login_his(models.Model):
     class Meta:
         verbose_name = _('User login history')
         verbose_name_plural = _('Users login histories')
+
